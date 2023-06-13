@@ -287,6 +287,7 @@ function ComplaintForm() {
         </div>
         <div className="row mb-3">
           <div className="col-sm-12">
+            <br></br>
             <button type="submit" className="btn btn-primary">
               Enviar Denuncia
             </button>

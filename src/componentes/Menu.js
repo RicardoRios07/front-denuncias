@@ -8,9 +8,9 @@ const Menu = ({ handleLogout }) => {
       <nav className="navbar navbar-expand-lg navbar-light bg-light" style={{ borderBottom: '1px solid #dee2e6', boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)' }}>
         <div className="container">
           <form className="d-flex mx-2">
-            <MDBInput className="form-control me-2" type="search" label="Buscar" />
+            <MDBInput className="form-control me-2" type="search" placeholder='Buscar' />
             <MDBBtn color="primary" size="sm">
-              Buscar
+              <MDBIcon fas icon="search" />
             </MDBBtn>
           </form>
         </div>
@@ -45,7 +45,7 @@ const Menu = ({ handleLogout }) => {
       </div>
       <div className="p-3 d-flex justify-content-center" style={{ borderTop: '1px solid #dee2e6' }}>
         <MDBBtn color="danger" onClick={handleLogout}>
-          <MDBIcon icon="sign-out-alt" className="me-2" />
+          <MDBIcon fas icon="sign-out-alt" className="me-2" />
           Cerrar Sesión
         </MDBBtn>
       </div>
