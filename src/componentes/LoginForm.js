@@ -17,7 +17,7 @@ const LoginForm = ({ onLogin }) => {
     <MDBContainer fluid className="p-3 my-5 h-100 d-flex align-items-center justify-content-center">
       <MDBRow className="h-100">
         <MDBCol md='6' className="d-flex align-items-center justify-content-center">
-          <img src="https://img.freepik.com/vector-premium/corrupcion-mano-pone-dinero-escala-soborno-aislado-blanco-ilustracion-plana-practicas-corruptas-sistema-legal-jurisprudencia_169479-186.jpg" className="img-fluid" alt="Sample image" />
+          <img src="https://img.freepik.com/vector-premium/corrupcion-mano-pone-dinero-escala-soborno-aislado-blanco-ilustracion-plana-practicas-corruptas-sistema-legal-jurisprudencia_169479-186.jpg" className="img-fluid" alt="Corrupciion" />
         </MDBCol>
 
         <MDBCol md='6' className="d-flex align-items-center justify-content-center">

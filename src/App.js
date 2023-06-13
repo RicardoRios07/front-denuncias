@@ -67,7 +67,7 @@ function App() {
     <Router>
       <div className="d-flex">
         {loggedIn && <Menu handleLogout={handleLogoutAndRedirect} />}
-        <div className="flex-grow-1 p-7" style={{ marginLeft: '75px' }}>
+        <div className="flex-grow-1 p-7">
           <div className="fixed-top">
             {/*<AppTitle />*/}
           </div>
