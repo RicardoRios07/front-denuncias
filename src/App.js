@@ -7,12 +7,15 @@ import ComplaintInfo from './componentes/complaints/ComplaintInfo';
 import ComplaintList from './componentes/complaints/ComplaintList';
 import UpdateComplaint from './componentes/complaints/UpdateComplaint';
 import LoginForm from './componentes/LoginForm';
-import Menu from './componentes/Menu';
+import SideBar from './componentes/SideBar';
 import AppTitle from './componentes/AppTitle';
+import NavBar from './componentes/NavBar';
+import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [showLoginForm, setShowLoginForm] = useState(false);
+  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
@@ -60,33 +63,45 @@ function App() {
 
   const handleLogoutAndRedirect = () => {
     handleLogout();
-    window.location.href = '/login'; 
+    window.location.href = '/login';
+  };
+
+  const toggleSideBar = () => {
+    setIsSideBarOpen(!isSideBarOpen);
   };
 
   return (
     <Router>
-      <div className="d-flex">
-        {loggedIn && <Menu handleLogout={handleLogoutAndRedirect} />}
-        <div className="flex-grow-1 p-7">
-          <div className="fixed-top">
-            {/*<AppTitle />*/}
+      <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
+        {loggedIn && (
+          <div className="navbar-container">
+            <NavBar handleLogout={handleLogoutAndRedirect} toggleSideBar={toggleSideBar} />
           </div>
-          <div className="container">
-            <Routes>
-              <Route path="/" element={<Navigate to="/login" />} />
-              <Route
-                path="/login"
-                element={loggedIn ? <Navigate to="/complaint-form" /> : <LoginForm onLogin={handleLogin} />}
-              />
-              {loggedIn && (
-                <>
-                  <Route path="/complaint-form" element={<ComplaintForm />} />
-                  <Route path="/complaint-info" element={<ComplaintInfo />} />
-                  <Route path="/complaint-list" element={<ComplaintList />} />
-                  <Route path="/update-complaint" element={<UpdateComplaint />} />
-                </>
-              )}
-            </Routes>
+        )}
+        <div className="d-flex flex-grow-1">
+          {loggedIn && (
+            <div className="sidebar-container">
+              <SideBar handleLogout={handleLogoutAndRedirect} isOpen={isSideBarOpen} />
+            </div>
+          )}
+          <div className="content-container flex-grow-1 p-7">
+            <div className="container">
+              <Routes>
+                <Route path="/" element={<Navigate to="/login" />} />
+                <Route
+                  path="/login"
+                  element={loggedIn ? <Navigate to="/complaint-form" /> : <LoginForm onLogin={handleLogin} />}
+                />
+                {loggedIn && (
+                  <>
+                    <Route path="/complaint-form" element={<ComplaintForm />} />
+                    <Route path="/complaint-info" element={<ComplaintInfo />} />
+                    <Route path="/complaint-list" element={<ComplaintList />} />
+                    <Route path="/update-complaint" element={<UpdateComplaint />} />
+                  </>
+                )}
+           </Routes>
+          </div>
           </div>
         </div>
       </div>

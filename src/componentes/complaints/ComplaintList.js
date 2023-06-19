@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useEffect } from 'react';
+import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBBtn } from 'mdb-react-ui-kit';
 
 function ComplaintsList() {
   const [complaints, setComplaints] = useState([]);
@@ -12,6 +12,8 @@ function ComplaintsList() {
   const [type, setType] = useState('0');
   const [isReal, setIsReal] = useState('0');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [selectedComplaint, setSelectedComplaint] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -36,6 +38,12 @@ function ComplaintsList() {
     }
   };
 
+  const truncateDescription = (description, maxLength) => {
+    if (description.length > maxLength) {
+      return description.substring(0, maxLength) + '...';
+    }
+    return description;
+  };
 
   return (
     <div className="container">
@@ -127,36 +135,75 @@ function ComplaintsList() {
             <option value="1">Si</option>
           </select>
         </div>
+        <p></p>
         <button type="submit" className="btn btn-primary">Buscar denuncias</button>
-        </form>
+      </form>
 
       {loading ? (
         <p>Cargando denuncias...</p>
       ) : (
         <div>
           {complaints.length > 0 ? (
-            <ul className="list-group">
+            <div className="row row-cols-1 row-cols-md-2 g-4">
               {complaints.map((complaint) => (
-                <li key={complaint._id} className="list-group-item">
-                  <h3>{complaint.detail}</h3>
-                  {complaint.image && (
-                    <img src={`http://169.62.234.124:3009${complaint.image}`} alt="Denuncia" className="img-fluid" />
-                  )}
-                  <p>{complaint.description}</p>
-                  <p>Nivel de corrupción: {complaint.levelCorruption}</p>
-                  <p>Fecha: {complaint.date}</p>
-                  <p>Provincia: {complaint.province.name}</p>
-                  <p>Ciudad: {complaint.city.name}</p>
-                  <p>Institución: {complaint.institution.name}</p>
-                  <p>Tipo de corrupción: {complaint.typeCorruption.name}</p>
-                  <p>Creado en: {complaint.createdAt}</p>
-                  <p>Actualizado en: {complaint.updatedAt}</p>
-                </li>
+                <div key={complaint._id} className="col">
+                  <MDBCard style={{ maxWidth: '540px' }}>
+                    {complaint.image && (
+                      <div className="card-image">
+                        <img src={complaint.image} alt="Denuncia" />
+                      </div>
+                    )}
+                    <MDBCardBody>
+                      <MDBCardTitle>{complaint.detail}</MDBCardTitle>
+                      <MDBCardText>{truncateDescription(complaint.description, 100)}</MDBCardText>
+                      <p>Nivel de corrupción: {complaint.levelCorruption}</p>
+                      <p>Fecha: {complaint.date}</p>
+                      <p>Provincia: {complaint.province.name}</p>
+                      <p>Ciudad: {complaint.city.name}</p>
+                      <p>Institución: {complaint.institution.name}</p>
+                      <p>Tipo de corrupción: {complaint.typeCorruption.name}</p>
+                      <p>Creado en: {complaint.createdAt}</p>
+                      <p>Actualizado en: {complaint.updatedAt}</p>
+                      <div className="d-flex justify-content-between">
+                        <MDBBtn color="primary" onClick={() => setSelectedComplaint(complaint)}>Ver Más</MDBBtn>
+                        <MDBBtn color="success">Atender</MDBBtn>
+                      </div>
+                    </MDBCardBody>
+                  </MDBCard>
+                </div>
               ))}
-            </ul>
+            </div>
           ) : (
             <p>No se encontraron denuncias</p>
           )}
+        </div>
+      )}
+
+      {selectedComplaint && (
+        <div className="fixed-top">
+          <div className="card-overlay"></div>
+          <MDBCard className="overlay-card" style={{ maxWidth: '540px', margin: '50px auto' }}>
+            {selectedComplaint.image && (
+              <div className="card-image">
+                <img src={selectedComplaint.image} alt="Denuncia" />
+              </div>
+            )}
+            <MDBCardBody>
+              <MDBCardTitle>{selectedComplaint.detail}</MDBCardTitle>
+              <MDBCardText>{selectedComplaint.description}</MDBCardText>
+              <p>Nivel de corrupción: {selectedComplaint.levelCorruption}</p>
+              <p>Fecha: {selectedComplaint.date}</p>
+              <p>Provincia: {selectedComplaint.province.name}</p>
+              <p>Ciudad: {selectedComplaint.city.name}</p>
+              <p>Institución: {selectedComplaint.institution.name}</p>
+              <p>Tipo de corrupción: {selectedComplaint.typeCorruption.name}</p>
+              <p>Creado en: {selectedComplaint.createdAt}</p>
+              <p>Actualizado en: {selectedComplaint.updatedAt}</p>
+              <div className="d-flex justify-content-end">
+                <MDBBtn color="danger" onClick={() => setSelectedComplaint(null)}>X</MDBBtn>
+              </div>
+            </MDBCardBody>
+          </MDBCard>
         </div>
       )}
     </div>

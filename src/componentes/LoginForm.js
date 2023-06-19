@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { MDBContainer, MDBCol, MDBRow, MDBBtn, MDBIcon, MDBInput, MDBCheckbox } from 'mdb-react-ui-kit';
+import { FaSpinner } from 'react-icons/fa';
+import { BiUserCircle, BiLockAlt, BiCheckCircle } from 'react-icons/bi';
 
 const LoginForm = ({ onLogin }) => {
   const [username, setUsername] = useState('');
@@ -30,6 +32,7 @@ const LoginForm = ({ onLogin }) => {
               size="lg"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              icon={<BiUserCircle />}
             />
             <MDBInput
               wrapperClass='mb-4'
@@ -39,17 +42,18 @@ const LoginForm = ({ onLogin }) => {
               size="lg"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              icon={<BiLockAlt />}
             />
 
             <div className="d-flex justify-content-between mb-4">
-              <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Recordarme' />
+              <MDBCheckbox name='flexCheck' value='' id='flexCheckDefault' label='Recordarme' icon={<BiCheckCircle />} />
             </div>
 
             <div className='text-center text-md-start mt-4 pt-2'>
               <MDBBtn className={`mb-0 px-5 ${submitting ? 'disabled' : ''}`} size='lg' type='submit' disabled={submitting}>
                 {submitting ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <FaSpinner className="me-2" />
                     Cargando...
                   </>
                 ) : (
@@ -71,4 +75,3 @@ const LoginForm = ({ onLogin }) => {
 };
 
 export default LoginForm;
-
