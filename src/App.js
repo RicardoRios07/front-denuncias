@@ -8,7 +8,6 @@ import ComplaintList from './componentes/complaints/ComplaintList';
 import UpdateComplaint from './componentes/complaints/UpdateComplaint';
 import LoginForm from './componentes/LoginForm';
 import SideBar from './componentes/SideBar';
-import AppTitle from './componentes/AppTitle';
 import NavBar from './componentes/NavBar';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 
@@ -100,8 +99,8 @@ function App() {
                     <Route path="/update-complaint" element={<UpdateComplaint />} />
                   </>
                 )}
-           </Routes>
-          </div>
+              </Routes>
+            </div>
           </div>
         </div>
       </div>

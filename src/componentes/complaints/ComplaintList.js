@@ -1,24 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBBtn } from 'mdb-react-ui-kit';
+import { Card, CardContent, Typography, Button, TextField, FormControl, Select, InputLabel, MenuItem, Grid } from '@mui/material';
 
 function ComplaintsList() {
   const [complaints, setComplaints] = useState([]);
-  const [search, setSearch] = useState('');
-  const [typeSearch, setTypeSearch] = useState('');
-  const [page, setPage] = useState('1');
-  const [limit, setLimit] = useState('50');
-  const [sortBy, setSortBy] = useState('createdAt');
-  const [sortDesc, setSortDesc] = useState('true');
-  const [type, setType] = useState('0');
-  const [isReal, setIsReal] = useState('0');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    const url = `http://169.62.234.124:3009/api/corruptometro/complaints?search=${search}&typeSearch=${typeSearch}&page=${page}&limit=${limit}&sortBy=${sortBy}&sortDesc=${sortDesc}&type=${type}&isReal=${isReal}`;
+  const fetchComplaints = async () => {
+    const url = 'https://back-barrios-462cb6c76674.herokuapp.com/denuncias/getDenunciasUser';
 
     try {
       setLoading(true);
@@ -26,17 +16,22 @@ function ComplaintsList() {
       const data = await response.json();
 
       if (response.ok) {
-        setComplaints(data.docs);
+        setComplaints(data);
       } else {
         console.error('Error al obtener las denuncias');
-        alert('Error al obtener las denuncias');
+        setError(true);
       }
     } catch (error) {
       console.error('Error en la solicitud:', error);
+      setError(true);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchComplaints();
+  }, []);
 
   const truncateDescription = (description, maxLength) => {
     if (description.length > maxLength) {
@@ -45,134 +40,61 @@ function ComplaintsList() {
     return description;
   };
 
+  const getGoogleMapsLink = (latitude, longitude) => {
+    return `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
+  };
+
   return (
     <div className="container">
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="search">Búsqueda:</label>
-          <input
-            type="text"
-            id="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="form-control"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="typeSearch">Tipo de búsqueda:</label>
-          <input
-            type="text"
-            id="typeSearch"
-            value={typeSearch}
-            onChange={(e) => setTypeSearch(e.target.value)}
-            className="form-control"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="page">Página:</label>
-          <input
-            type="text"
-            id="page"
-            value={page}
-            onChange={(e) => setPage(e.target.value)}
-            className="form-control"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="limit">Límite:</label>
-          <input
-            type="text"
-            id="limit"
-            value={limit}
-            onChange={(e) => setLimit(e.target.value)}
-            className="form-control"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="sortBy">Ordenar por:</label>
-          <input
-            type="text"
-            id="sortBy"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="form-control"
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="sortDesc">Orden ascendente:</label>
-          <select
-            id="sortDesc"
-            value={sortDesc}
-            onChange={(e) => setSortDesc(e.target.value)}
-            className="form-control"
-          >
-            <option value="true">Si</option>
-            <option value="false">No</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor="type">Tipo:</label>
-          <select
-            id="type"
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            className="form-control"
-          >
-            <option value="0">Todas</option>
-            <option value="1">Anónima</option>
-            <option value="2">Con nombre</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label htmlFor="isReal">Es real la denuncia:</label>
-          <select
-            id="isReal"
-            value={isReal}
-            onChange={(e) => setIsReal(e.target.value)}
-            className="form-control"
-          >
-            <option value="0">No</option>
-            <option value="1">Si</option>
-          </select>
-        </div>
-        <p></p>
-        <button type="submit" className="btn btn-primary">Buscar denuncias</button>
+      <form>
+        {/* ... (form inputs) */}
+        <Button variant="contained" color="primary" type="submit">
+          Buscar denuncias
+        </Button>
       </form>
 
       {loading ? (
         <p>Cargando denuncias...</p>
+      ) : error ? (
+        <p>Error al obtener las denuncias</p>
       ) : (
         <div>
           {complaints.length > 0 ? (
-            <div className="row row-cols-1 row-cols-md-2 g-4">
+            <Grid container spacing={2}>
               {complaints.map((complaint) => (
-                <div key={complaint._id} className="col">
-                  <MDBCard style={{ maxWidth: '540px' }}>
-                    {complaint.image && (
+                <Grid key={complaint._id} item xs={12} sm={6} md={4}>
+                  <Card>
+                    {complaint.evidencia && (
                       <div className="card-image">
-                        <img src={complaint.image} alt="Denuncia" />
+                        <img src={complaint.evidencia} alt="Evidencia" />
                       </div>
                     )}
-                    <MDBCardBody>
-                      <MDBCardTitle>{complaint.detail}</MDBCardTitle>
-                      <MDBCardText>{truncateDescription(complaint.description, 100)}</MDBCardText>
-                      <p>Nivel de corrupción: {complaint.levelCorruption}</p>
-                      <p>Fecha: {complaint.date}</p>
-                      <p>Provincia: {complaint.province.name}</p>
-                      <p>Ciudad: {complaint.city.name}</p>
-                      <p>Institución: {complaint.institution.name}</p>
-                      <p>Tipo de corrupción: {complaint.typeCorruption.name}</p>
-                      <p>Creado en: {complaint.createdAt}</p>
-                      <p>Actualizado en: {complaint.updatedAt}</p>
-                      <div className="d-flex justify-content-between">
-                        <MDBBtn color="primary" onClick={() => setSelectedComplaint(complaint)}>Ver Más</MDBBtn>
-                        <MDBBtn color="success">Atender</MDBBtn>
+                    <CardContent>
+                      <Typography variant="h5" component="h2">
+                        {complaint.tituloDenuncia}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {truncateDescription(complaint.descripcion, 100)}
+                      </Typography>
+                      <Typography>Categoría: {complaint.categoria}</Typography>
+                      <Typography>Estado: {complaint.estado}</Typography>
+                      <Typography>Fecha y hora: {complaint.fechaHora}</Typography>
+                      <Typography>
+                        Ubicación:{' '}
+                        <a href={getGoogleMapsLink(complaint.ubicacion.coordenadas[1], complaint.ubicacion.coordenadas[0])} target="_blank" rel="noopener noreferrer">
+                          Ver en Google Maps
+                        </a>
+                      </Typography>
+                      <Typography>Denunciante: {complaint.nombreDenunciante}</Typography>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Button color="primary" variant="contained" onClick={() => setSelectedComplaint(complaint)}>Ver Más</Button>
+                        <Button color="success" variant="contained">Atender</Button>
                       </div>
-                    </MDBCardBody>
-                  </MDBCard>
-                </div>
+                    </CardContent>
+                  </Card>
+                </Grid>
               ))}
-            </div>
+            </Grid>
           ) : (
             <p>No se encontraron denuncias</p>
           )}
@@ -182,28 +104,32 @@ function ComplaintsList() {
       {selectedComplaint && (
         <div className="fixed-top">
           <div className="card-overlay"></div>
-          <MDBCard className="overlay-card" style={{ maxWidth: '540px', margin: '50px auto' }}>
-            {selectedComplaint.image && (
+          <Card className="overlay-card" style={{ maxWidth: '540px', margin: '50px auto' }}>
+            {selectedComplaint.evidencia && (
               <div className="card-image">
-                <img src={selectedComplaint.image} alt="Denuncia" />
+                <img src={selectedComplaint.evidencia} alt="Evidencia" />
               </div>
             )}
-            <MDBCardBody>
-              <MDBCardTitle>{selectedComplaint.detail}</MDBCardTitle>
-              <MDBCardText>{selectedComplaint.description}</MDBCardText>
-              <p>Nivel de corrupción: {selectedComplaint.levelCorruption}</p>
-              <p>Fecha: {selectedComplaint.date}</p>
-              <p>Provincia: {selectedComplaint.province.name}</p>
-              <p>Ciudad: {selectedComplaint.city.name}</p>
-              <p>Institución: {selectedComplaint.institution.name}</p>
-              <p>Tipo de corrupción: {selectedComplaint.typeCorruption.name}</p>
-              <p>Creado en: {selectedComplaint.createdAt}</p>
-              <p>Actualizado en: {selectedComplaint.updatedAt}</p>
-              <div className="d-flex justify-content-end">
-                <MDBBtn color="danger" onClick={() => setSelectedComplaint(null)}>X</MDBBtn>
+            <CardContent>
+              <Typography variant="h5" component="h2">
+                {selectedComplaint.tituloDenuncia}
+              </Typography>
+              <Typography>{selectedComplaint.descripcion}</Typography>
+              <Typography>Categoría: {selectedComplaint.categoria}</Typography>
+              <Typography>Estado: {selectedComplaint.estado}</Typography>
+              <Typography>Fecha y hora: {selectedComplaint.fechaHora}</Typography>
+              <Typography>
+                Ubicación:{' '}
+                <a href={getGoogleMapsLink(selectedComplaint.ubicacion.coordenadas[1], selectedComplaint.ubicacion.coordenadas[0])} target="_blank" rel="noopener noreferrer">
+                  Ver en Google Maps
+                </a>
+              </Typography>
+              <Typography>Denunciante: {selectedComplaint.nombreDenunciante}</Typography>
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button color="danger" variant="contained" onClick={() => setSelectedComplaint(null)}>X</Button>
               </div>
-            </MDBCardBody>
-          </MDBCard>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
