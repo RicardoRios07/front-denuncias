@@ -6,9 +6,10 @@ import ComplaintForm from './componentes/complaints/ComplaintForm';
 import ComplaintInfo from './componentes/complaints/ComplaintInfo';
 import ComplaintList from './componentes/complaints/ComplaintList';
 import UpdateComplaint from './componentes/complaints/UpdateComplaint';
-import LoginForm from './componentes/LoginForm';
+import LoginForm from './componentes/auth/LoginForm';
 import SideBar from './componentes/SideBar';
 import NavBar from './componentes/NavBar';
+import NotFound from './componentes/Error/NotFound';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
 
 function App() {
@@ -91,6 +92,7 @@ function App() {
                   path="/login"
                   element={loggedIn ? <Navigate to="/complaint-form" /> : <LoginForm onLogin={handleLogin} />}
                 />
+                <Route path="/404" element={<NotFound />} />
                 {loggedIn && (
                   <>
                     <Route path="/complaint-form" element={<ComplaintForm />} />

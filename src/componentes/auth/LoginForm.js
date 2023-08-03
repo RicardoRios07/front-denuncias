@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MDBContainer, MDBCol, MDBRow, MDBBtn, MDBIcon, MDBInput, MDBCheckbox } from 'mdb-react-ui-kit';
 import { FaSpinner } from 'react-icons/fa';
 import { BiUserCircle, BiLockAlt, BiCheckCircle } from 'react-icons/bi';
+import Footer from '../Footer/Footer';
 
 const LoginForm = ({ onLogin }) => {
   const [username, setUsername] = useState('');
@@ -65,11 +66,7 @@ const LoginForm = ({ onLogin }) => {
         </MDBCol>
       </MDBRow>
 
-      <div className="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary fixed-bottom w-100">
-        <div className="text-white mb-3 mb-md-0">
-          © 2023 Corruptómetro
-        </div>
-      </div>
+      <Footer />
     </MDBContainer>
   );
 };

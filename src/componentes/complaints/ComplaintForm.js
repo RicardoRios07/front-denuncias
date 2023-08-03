@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, TextField, Grid, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { useGeolocated } from "react-geolocated";
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import Footer from '../Footer/Footer';
 
 const categories = ['Seguridad', 'Infraestructura', 'Contaminacion', 'Ruido'];
 
-function ComplaintForm({ isGeolocationAvailable, isGeolocationEnabled }) {
+function ComplaintForm() {
   const [tituloDenuncia, setTituloDenuncia] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [evidencia, setEvidencia] = useState(null);
   const [categoria, setCategoria] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +21,7 @@ function ComplaintForm({ isGeolocationAvailable, isGeolocationEnabled }) {
     formData.append('tituloDenuncia', tituloDenuncia);
     formData.append('descripcion', descripcion);
     formData.append('evidencia', evidencia);
-    formData.append('ubicacion', JSON.stringify({ type: 'Point', coordenadas: [coords.longitude, coords.latitude] }));
+    // formData.append('ubicacion', JSON.stringify({ type: 'Point', coordenadas: [coords.longitude, coords.latitude] }));
     formData.append('categoria', categoria);
 
     try {
@@ -38,15 +42,41 @@ function ComplaintForm({ isGeolocationAvailable, isGeolocationEnabled }) {
     }
   };
 
-  // Aquí utilizamos la función useGeolocated para obtener la geolocalización
-  const geolocation = useGeolocated({
-    positionOptions: {
-      enableHighAccuracy: true,
-    },
-    userDecisionTimeout: 5000,
-  });
+  // Hook useEffect para obtener la ubicación del usuario al cargar la página
+  useEffect(() => {
+    const options = {
+      enableHighAccuracy: true, // Habilitar alta precisión
+      maximumAge: 0, // No utilizar una ubicación en caché
+      timeout: 5000, // Tiempo máximo para obtener la ubicación
+    };
 
-  const coords = geolocation && geolocation.coords;
+    const successCallback = (position) => {
+      const { latitude, longitude } = position.coords;
+      setSelectedLocation({ lat: latitude, lng: longitude });
+      setLoading(false);
+    };
+
+    const errorCallback = (error) => {
+      console.error('Error al obtener la ubicación del usuario:', error);
+      setLoading(false);
+    };
+
+    navigator.geolocation.getCurrentPosition(successCallback, errorCallback, options);
+
+  }, []);
+
+  function LocationMarker() {
+    // Hook useMapEvents para escuchar el evento click en el mapa
+    const map = useMapEvents({
+      click(e) {
+        setSelectedLocation(e.latlng);
+      },
+    });
+
+    // Devolvemos null para que no se muestre un marcador en la ubicación del usuario
+    return null;
+  }
+
 
   return (
     <div className="container">
@@ -94,14 +124,27 @@ function ComplaintForm({ isGeolocationAvailable, isGeolocationEnabled }) {
             </FormControl>
           </Grid>
           <Grid item xs={12}>
-            {geolocation.isGeolocationAvailable && geolocation.isGeolocationEnabled ? (
-              <div>
-                <p>Comparta su ubicación:</p>
-                <p>Latitud: {geolocation.coords?.latitude}</p> {/* Usamos el operador opcional ?. para verificar coords */}
-                <p>Longitud: {geolocation.coords?.longitude}</p> {/* Usamos el operador opcional ?. para verificar coords */}
-              </div>
+            {loading ? (
+              <p>Obteniendo ubicación...</p>
+            ) : selectedLocation ? (
+              <MapContainer
+                center={[selectedLocation?.lat || 0, selectedLocation?.lng || 0]}
+                zoom={13}
+                style={{ height: '300px', width: '100%' }}
+              >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              {selectedLocation && (
+                <Marker position={selectedLocation}>
+                  <Popup>Ubicación seleccionada</Popup>
+                </Marker>
+              )}
+              <LocationMarker />
+              </MapContainer>
             ) : (
-              <p>No se puede obtener la ubicación.</p>
+              <p>No se pudo obtener la ubicación.</p>
             )}
           </Grid>
           <Grid item xs={12}>
